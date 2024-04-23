@@ -68,10 +68,13 @@ loop_in:
 	li $v0, 5	# Read the number of (lowest) scores to drop
 	syscall
 	move $a1, $v0
-	sub $a1, $s0, $a1	# numScores - drop
+	sub $a1, $s0, $a1 # numScores - drop
 	move $a0, $s2
-	jal calcSum	# Call calcSum to RECURSIVELY compute the sum of scores that are not dropped
+	jal calcSum  # Call calcSum to RECURSIVELY compute the sum of scores that are not dropped
 	
+	
+	
+	####################################################
 	# Your code here to compute average and print it
 	move $t0, $v0
 	li $v0, 4
@@ -81,16 +84,20 @@ loop_in:
 	move $a0, $t0
 	li $v0, 1
 	syscall
+	####################################################
 	
 	lw $ra, 0($sp)
 	addi $sp, $sp 4
 	li $v0, 10 
 	syscall
 	
-	
+
+
+
+######################################################################	
 # printList takes in an array and its size as arguments. 
 # It prints all the elements in one line with a newline at the end.
-printArray: # $a0 = array and $a1 = lens
+printArray: 
 	# Your implementation of printList here	
 	move $t0, $0 
 	move $t1, $a0 
@@ -110,11 +117,21 @@ print:
 	la $a0, nextLine
 	syscall 
 	
+######################################################################	
 	jr $ra
+
+		
+				
 	
+						
+											
+																					
+		
+																		
+######################################################################	
 # selSort takes in the number of scores as argument. 
 # It performs SELECTION sort in descending order and populates the sorted array
-selSort: # $a0 = lens
+selSort: 
 	# Your implementation of selSort here
 	move $t0, $0
 	move $t7, $a0
@@ -186,12 +203,25 @@ sort_else1:
 	addi $t0, $t0, 1
 	addi $t7, $a0, -1
 	bne $t0, $t7, sort1 
+	
+######################################################################	
 nosort:
 	jr $ra
+
+
 	
+		
+			
+
+					
+										
+															
+																				
+######################################################################																																																													
 # calcSum takes in an array and its size as arguments.
 # It RECURSIVELY computes and returns the sum of elements in the array.
 # Note: you MUST NOT use iterative approach in this function.
+
 calcSum: # $a0 = array, $a1 = lens, $a2 = numLowestToDrop
     # Your implementation of calcSum here
     move $t0, $a2 # $t0 = numLowestToDrop
@@ -213,5 +243,7 @@ drop_next:
     j loop_calc
 sum_done:
     move $v0, $t3 # Return the sum
+    
+######################################################################	
     jr $ra
 	

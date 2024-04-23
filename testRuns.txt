@@ -1,0 +1,35 @@
+Test Case: #1 
+Number of Assignments: 1
+Scores: 75
+Scores to Drop: 0
+Expected Average: 75
+
+Test Case: #2
+Number of Assignments: 5
+Scores: 88 92 76 84 90
+Scores to Drop: 0
+Expected Average: 86
+
+Test Case: #3 
+Number of Assignments: 3
+Scores: 0 100 50
+Scores to Drop: 1
+Expected Average: 75
+
+Test Case: #4
+Number of Assignments: 5
+Scores: 60 60 60 60 60
+Scores to Drop: 2
+Expected Average: 60
+
+Test Case: #5
+Number of Assignments: 5
+Scores: 100 90 80 70 60
+Scores to Drop: 2
+Expected Average: 90
+
+Test Case: #6
+Number of Assignments: 5
+Scores: 60 70 80 90 100
+Scores to Drop: 2
+Expected Average: 90
