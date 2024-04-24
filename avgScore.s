@@ -105,34 +105,32 @@ loop_in:
 # printList takes in an array and its size as arguments. 
 # It prints all the elements in one line with a newline at the end.
 
-# Your implementation of printList here	
+# Your implementation of printList here
+
+# $a0 = address of the array to print, $a1 = number of elements in the array	
 
 printArray:
-    move $t0, $0            # index $t0 to 0 to start from first element
-    move $t1, $a0           # Store base address of  array in $t1
+	move $t5, $a0          # $t5 traverse array initially points to start of array
+	move $t6, $0           # $t6 temp store current element to be printed
+	move $t7, $0           # $t7 is loop counter initialized to 0
 
-# Loop iterate over each element of array
-print:
-    sll $t2, $t0, 2         # Shift  index left by 2 to calculate offset
-    add $t2, $t2, $t1       # offset to base address for memory address of current element
-    lw $a0, 0($t2)          # Load value of current array element for print
-    
-    li $v0, 1               #print integer syscall
-    syscall                
+loopin:
+	lw $t6, 0($t5)         # Load current array element 
+	li $v0, 1              # Syscall printing an integer
+	addi $a0, $t6, 0       # Move current element for printing
+	syscall                # syscall to print the integer
 
-    li $v0, 4               # print string syscall
-    la $a0, space           # space character into $a0
-    syscall                 
+	li $a0, 32            # Load space ASCII code (32) into $a0
+	li $v0, 11  	      # Syscall printing character
+	syscall                
 
-    addi $t0, $t0, 1        # Increment index to move to next array element
-    bne $t0, $a1, print     # Compare index with array size and if not equal then continue print
-
-# print newline character:
-    li $v0, 4               # print string syscall
-    la $a0, nextLine        # Load address of the newline string 
-    syscall                 
-
+	addi $t5, $t5, 4       # Increment array pointer to the next integer (4 bytes per integer)
+	addi $t7, $t7, 1       # Increment loop counter
+	bne $t7, $a1, loopin   # Continue looping if haven't printed all elements yet
 	
+	li $a0, 10             # Load newline ASCII code (10) into $a0 for printing newline after array
+	li $v0, 11             # printing a character
+	syscall                     
 ######################################################################	
 	jr $ra 
 
@@ -224,37 +222,34 @@ nosort:
 # It RECURSIVELY computes and returns the sum of elements in the array.
 # Note: you MUST NOT use iterative approach in this function.
 
-calcSum: 
-move $t0, $a2       # numLowestToDrop into $t0
-move $t1, $a0       # base address of array into $t1
-move $t2, $a1       # length of array into $t2
-move $t3, $0        # sum in $t3 to 0
-move $s0, $0        # index in $s0 to 0
+# Your implementation of calcSum here
+calcSum:
+    addi $sp, $sp, -12   # space for 3 items on stack
+    sw $ra, 8($sp)       # return address on stack
+    sw $a0, 4($sp)       # base address of array on stack
+    sw $a1, 0($sp)       # length of array on stack
 
-# Loop through array elements
-loop_calc:
-    beq $t2, $s0, sum_done    # index equals array length, end loop
-    ble $t0, $s0, not_drop    # Continue summing if numLowestToDrop is less than or equal to index
-    j drop_next               # Jump to increment index if lowest to drop.
+    slt $t0, $zero, $a1  # $t0 to 1 if $a1 is greater than zero (check for base case)
+    beq $t0, $zero, lenisZero # array length = zero, jump to the base case 
 
-# Summing elements not in the lowest to drop
-not_drop:
-    sll $t4, $s0, 2           #address offset calculation by shifting index left by 2 
-    add $t4, $t4, $t1         # memory address of array element by adding base address and offset
-    lw $t5, 0($t4)            # load value array element at index into $t5
-    add $t3, $t3, $t5         # Add value of element to sum
+    addi $a1, $a1, -1    # Decrement length of array for the recursive call
+    jal calcSum          # Recursive call to calcSum with decremented length
 
+    # After returning from recursion, calculate sum of current element and accumulated sum
+    lw $t0, 4($sp)       # Restore base address of the array from stack
+    sll $t0, $a1, 2      # Calculate memory address offset for current element
+    add $t0, $t0, $a0    # Add offset to  base address
+    lw $t0, 0($t0)       # Load current array element
+    add $v0, $v0, $t0    # Add current element's value to accumulated sum
+    j endCalcSum         # Jump to end of the function to perform stack cleanup
 
-drop_next:
-    addi $s0, $s0, 1          # Incrementing index
+lenisZero:               # Base case handler
+    li $v0, 0            # array length = zero, set sum to zero
 
-# Return to the loop
-    j loop_calc
-
-# End of the loop and output result
-sum_done:
-    move $v0, $t3             # computed sum to return register
-    
-######################################################################	
-    jr $ra
-	
+endCalcSum:              
+    lw $ra, 8($sp)       # Restore return address from stack
+    lw $a0, 4($sp)       # Restore base address of array from stack
+    lw $a1, 0($sp)       # Restore length of array from stack
+    addi $sp, $sp, 12    # Deallocate stack space
+    jr $ra               # Return to caller with sum in $v0
+######################################################################   
