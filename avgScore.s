@@ -155,7 +155,7 @@ selSort:
     move $t7, $a0         # number of elements store = $t7.
 
 # Copy array from ($s1) to ($s2)
-copy_array:
+c_arr:
     sll $t1, $t0, 2       # Calculate offset for current index
     add $t1, $t1, $s1     # Address of current element in source array
     lw $v0, 0($t1)        # Load element at calculated address in $v0
@@ -163,7 +163,7 @@ copy_array:
     add $t2, $t2, $s2     # Address of current element in  destination array
     sw $v0, 0($t2)        # Store loaded element into destination array
     addi $t0, $t0, 1      # Increment index
-    bne $t0, $a0, copy_array # Repeat until all elements copied
+    bne $t0, $a0, c_arr # Repeat until all elements copied
 
 # Sort array
     move $t0, $0          # Reset index $t0 for sorting
@@ -182,11 +182,11 @@ sort2:
     add $t5, $t5, $s2
     lw $t6, 0($t5)        # load current largest element
 
-    blt $t4, $t6, sort_else1 # current element is smaller, skip updating $t2
+    blt $t4, $t6, st_else1 # current element is smaller, skip updating $t2
 
     move $t2, $t1         # $t2 to point to new largest element index
 
-sort_else1:
+st_else1:
     addi $t1, $t1, 1      # Increment $t1 to compare  ext element
     bne $t1, $a0, sort2   # Continue loop til all elements compared
 
@@ -230,7 +230,7 @@ calcSum:
     sw $a1, 0($sp)       # length of array on stack
 
     slt $t0, $zero, $a1  # $t0 to 1 if $a1 is greater than zero (check for base case)
-    beq $t0, $zero, lenisZero # array length = zero, jump to the base case 
+    beq $t0, $zero, baseCase # array length = zero, jump to the base case 
 
     addi $a1, $a1, -1    # Decrement length of array for the recursive call
     jal calcSum          # Recursive call to calcSum with decremented length
@@ -243,7 +243,7 @@ calcSum:
     add $v0, $v0, $t0    # Add current element's value to accumulated sum
     j endCalcSum         # Jump to end of the function to perform stack cleanup
 
-lenisZero:               # Base case handler
+baseCase:               # Base case handler
     li $v0, 0            # array length = zero, set sum to zero
 
 endCalcSum:              
